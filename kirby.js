@@ -1,7 +1,13 @@
-// http://www.html5canvastutorials.com/three/html5-canvas-webgl-ambient-lighting-with-three-js/
-//http://learningthreejs.com/blog/2013/09/16/how-to-make-the-earth-in-webgl/
-
-// revolutions per second
+/*
+* Starter code:
+* http://www.html5canvastutorials.com/three/html5-canvas-webgl-ambient-lighting-with-three-js/
+* Adding a frag shader to the 3d model:
+* http://learningthreejs.com/blog/2013/09/16/how-to-make-the-earth-in-webgl/
+* Info about shaders and how to use three.js
+* http://aerotwist.com/tutorials/an-introduction-to-shaders-part-1/
+*
+*/
+//revolutions per second
 //var angularSpeed = 0.2;
 //var lastTime = 0;
 
