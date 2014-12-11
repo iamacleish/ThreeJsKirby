@@ -13,9 +13,8 @@ var camera; //Location the render is viewed from
 var scene;	//The scene with the objects in it
 var kirby; //The object to hold all of Kirby's body parts.
 
-main(); //Run the main function.
-
-function main(){
+//Run the main function.
+new function main(){
 	//Initialization including renderer setup and camera positioning.
 	init();
 	
@@ -54,7 +53,7 @@ function init(){
 // This is animation loop function and is executed on each animation frame 
 function animate(){
 	//Rotates kirby .1 times a second based on the time and date.
-	rotateKirby();
+	//rotateKirby();
 
 	//Render the scene and it's changes.
 	renderer.render(scene, camera);
@@ -97,29 +96,62 @@ function drawBody(){
 };
 
 function drawFeet(){
-	//Kirby's main body/head and face
-	var kirbyFootGeometry = new THREE.SphereGeometry(50, 200, 200);
-	var kirbyFootMaterial = new THREE.MeshLambertMaterial({
-		color: 'red'
-	});
-	var kirbyRightFoot;
+	//Kirby's feet
+		var points = [];
+	for ( var i = 0; i < 50; i ++ ) {
+		points.push( new THREE.Vector3( Math.sin( i * .0641 ) * 60 , 0, ( i - 5 ) * 1) );
+	}
 	
-	kirbyFoot = new THREE.Mesh(kirbyFootGeometry, kirbyFootMaterial);
-	kirbyFoot.overdraw = true;
-	kirbyFoot.position.x = 110;
-	kirby.add(kirbyFoot);
+	var kirbyFeetColor = new THREE.Color( 0xcc0000 ); //Dark red
+	var kirbyFootGeometry = new THREE.LatheGeometry(points);
+	var kirbyFootMaterial = new THREE.MeshLambertMaterial({
+		color: kirbyFeetColor
+	});
+	
+	var footOffsetX = 60;
+	var footOffsetY = -100;
+	//var 
+
+	new function drawRightFoot(){
+		var kirbyRightFoot;
+		kirbyRightFoot = new THREE.Mesh(kirbyFootGeometry, kirbyFootMaterial);
+		kirbyRightFoot.overdraw = true;
+		kirbyRightFoot.position.x = footOffsetX;
+		kirbyRightFoot.position.y = footOffsetY;
+		kirbyRightFoot.rotation.x = Math.PI * 0.15;
+		kirbyRightFoot.rotation.y = Math.PI * 0.3;
+		
+		kirby.add(kirbyRightFoot);
+	};
+	
+	new function drawLeftFoot(){
+		var kirbyLeftFoot;
+		kirbyLeftFoot = new THREE.Mesh(kirbyFootGeometry, kirbyFootMaterial);
+		kirbyLeftFoot.overdraw = true;
+		kirbyLeftFoot.position.x = -footOffsetX;
+		kirbyLeftFoot.position.y = footOffsetY;
+		kirbyLeftFoot.position.z = -70;
+		kirbyLeftFoot.rotation.x = Math.PI * -0.1;
+		kirbyLeftFoot.rotation.y = Math.PI * 0.1;
+		
+		kirby.add(kirbyLeftFoot);
+	};
+	
+
 };
 
 function addLighting(){
 	var ambientLight
 	var directionalLight
+	var ambientLightColor = 0x333333;
+	var directionalLightColor = 0xffffff;
 	
 	// Add subtle grey ambient lighting
-	ambientLight= new THREE.AmbientLight(0x444444);
+	ambientLight= new THREE.AmbientLight(ambientLightColor);
 	scene.add(ambientLight);
 
 	// Add pure white directional lighting
-	directionalLight = new THREE.DirectionalLight(0xffffff);
+	directionalLight = new THREE.DirectionalLight(directionalLightColor);
 	directionalLight.position.set(0.5, 0.5, 1).normalize();
 	scene.add(directionalLight);
 };
