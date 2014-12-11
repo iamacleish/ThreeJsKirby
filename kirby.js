@@ -1,4 +1,10 @@
 /*
+* Engineering Test
+* Ian MacLeish iamacleish@gmail.com
+* To enable rotation, uncomment rotateKirby(); on line 64 in the animate function.
+* This program was written using the three.js library which is a javascript implementation of
+* WebGL, which is based on OpenGL ES 2.0
+*
 * Starter code:
 * http://www.html5canvastutorials.com/three/html5-canvas-webgl-ambient-lighting-with-three-js/
 * Adding a frag shader to the 3d model:
@@ -13,6 +19,7 @@ var camera; //Location the render is viewed from
 var scene;	//The scene with the objects in it
 var kirby; //The object to hold all of Kirby's body parts.
 
+
 //Run the main function.
 new function main(){
 	//Initialization including renderer setup and camera positioning.
@@ -21,7 +28,7 @@ new function main(){
 	//Scene with objects (Kirby) in it
 	scene = new THREE.Scene();
 	
-	//Kirby object with Kirby's body parts in it.
+	//Kirby object which will contain his body parts.
 	kirby = new THREE.Group();
 	
 	//Draws Kirby and all of his body parts.
@@ -37,14 +44,15 @@ new function main(){
 	animate();
 };
 
+
 //Initialization function. Setup for rendering and camera.
 function init(){
-	// renderer
+	//Creates the renderer to render the shaders.
 	renderer = new THREE.WebGLRenderer();
 	renderer.setSize(window.innerWidth, window.innerHeight);
 	document.body.appendChild(renderer.domElement);
 
-	// camera
+	//Camera setup with a distance of 500 from origin.
 	camera = new THREE.PerspectiveCamera(45, window.innerWidth / window.innerHeight, 1, 1000);
 	camera.position.z = 500;
 }
@@ -52,7 +60,7 @@ function init(){
 
 // This is animation loop function and is executed on each animation frame 
 function animate(){
-	//Rotates kirby .1 times a second based on the time and date.
+	//Rotates Kirby .1 times a second based on the time and date.
 	//rotateKirby();
 
 	//Render the scene and it's changes.
@@ -64,26 +72,37 @@ function animate(){
 	});
 };
 
+
 //Rotates the Kirby object
 function rotateKirby(){
 	//revolutions per second
 	var angularSpeed = 0.1;
+	var rotationSpeedScaler = 500;
 	var time = (new Date()).getTime();
-	var angleChange = angularSpeed * time * 2 * Math.PI / 1000;
+	var angleChange = angularSpeed * time * Math.PI / rotationSpeedScaler;
 	kirby.rotation.y = angleChange;
 };
+
 
 //Draws all of Kirby's bodyparts (Feet, Arms, Head)
 function drawKirby(){
 	drawBody();
 	drawFeet();
+	drawArms();
 };
 
+
+//Draws Kirby's main body/head and face
 function drawBody(){
-	//Kirby's main body/head and face
-	var kirbyBodyGeometry = new THREE.SphereGeometry(100, 200, 200);
+	
+	var bodyRadius = 100;
+	var bodyWidthResolution = 200; //how many segments for width
+	var bodyHeightResolution = 200; //how many segments for height
+	var kirbyBodyGeometry = new THREE.SphereGeometry(bodyRadius, bodyWidthResolution , bodyHeightResolution);
 	var kirbyBodyMaterial = new THREE.MeshLambertMaterial();
 	var kirbyBody;
+	
+	//initial x and y rotation of the body
 	var bodyStartingRotX = -0.1;
 	var bodyStartingRotY = -0.4;
 	
@@ -95,11 +114,18 @@ function drawBody(){
 	kirby.add(kirbyBody);
 };
 
+
+//Function for drawing both of Kirby's feet using a lathe geometry.
 function drawFeet(){
 	//Kirby's feet
-		var points = [];
-	for ( var i = 0; i < 50; i ++ ) {
-		points.push( new THREE.Vector3( Math.sin( i * .0641 ) * 60 , 0, ( i - 5 ) * 1) );
+	var points = [];
+	var scaleByRing = .0641; 
+	var scaleSin = 60;
+	var positionZ = -5;
+	
+	//Iterates through the 'rings' in the shape as a lathe would.
+	for ( var ring = 0; ring < 50; ring ++ ) {
+		points.push( new THREE.Vector3( Math.sin( ring * scaleByRing ) * scaleSin , 0, ( ring + positionZ )) );
 	}
 	
 	var kirbyFeetColor = new THREE.Color( 0xcc0000 ); //Dark red
@@ -108,43 +134,92 @@ function drawFeet(){
 		color: kirbyFeetColor
 	});
 	
-	var footOffsetX = 60;
-	var footOffsetY = -100;
-	//var 
-
+	var footOffsetX = 60; //Both feet
+	var footOffsetY = -100; //Both feet
+	var footOffsetZ = -70; //Left foot only
+	
 	new function drawRightFoot(){
 		var kirbyRightFoot;
+		var rightFootRotX = 0.15;
+		var rightFootRotY = 0.3;
 		kirbyRightFoot = new THREE.Mesh(kirbyFootGeometry, kirbyFootMaterial);
 		kirbyRightFoot.overdraw = true;
 		kirbyRightFoot.position.x = footOffsetX;
 		kirbyRightFoot.position.y = footOffsetY;
-		kirbyRightFoot.rotation.x = Math.PI * 0.15;
-		kirbyRightFoot.rotation.y = Math.PI * 0.3;
+		kirbyRightFoot.rotation.x = Math.PI * rightFootRotX;
+		kirbyRightFoot.rotation.y = Math.PI * rightFootRotY;
 		
 		kirby.add(kirbyRightFoot);
 	};
 	
 	new function drawLeftFoot(){
 		var kirbyLeftFoot;
+		var leftFootRotX = -0.1;
+		var leftFootRotY = 0.1;
 		kirbyLeftFoot = new THREE.Mesh(kirbyFootGeometry, kirbyFootMaterial);
 		kirbyLeftFoot.overdraw = true;
 		kirbyLeftFoot.position.x = -footOffsetX;
 		kirbyLeftFoot.position.y = footOffsetY;
-		kirbyLeftFoot.position.z = -70;
-		kirbyLeftFoot.rotation.x = Math.PI * -0.1;
-		kirbyLeftFoot.rotation.y = Math.PI * 0.1;
+		kirbyLeftFoot.position.z = footOffsetZ;
+		kirbyLeftFoot.rotation.x = Math.PI * leftFootRotX;
+		kirbyLeftFoot.rotation.y = Math.PI * leftFootRotY;
 		
 		kirby.add(kirbyLeftFoot);
 	};
-	
-
 };
+
+
+//Function for drawing both of Kirby's arms using a sphere geometry.
+function drawArms(){
+	//Kirby's Arms
+	var kirbyArmColor = new THREE.Color( 0xdd7590 ); //Kirby pink
+	var armRadius = 40;
+	var armWidthResolution = 200; //how many segments for width
+	var armHeightResolution = 200; //how many segments for height
+	var kirbyArmGeometry = new THREE.SphereGeometry(armRadius, armWidthResolution, armHeightResolution);
+	var kirbyArmMaterial = new THREE.MeshLambertMaterial({
+		color: kirbyArmColor
+	});
+	
+	new function drawRightArm(){
+		var kirbyRightArm;
+		//positioning
+		var rightArmOffsetX = 90; 
+		var rightArmOffsetY = 50;
+		
+		kirbyRightArm = new THREE.Mesh(kirbyArmGeometry, kirbyArmMaterial);
+		kirbyRightArm.overdraw = true;
+		kirbyRightArm.position.x = rightArmOffsetX;
+		kirbyRightArm.position.y = rightArmOffsetY;
+
+		kirby.add(kirbyRightArm);
+	};
+	
+	new function drawLeftArm(){
+		var kirbyLeftArm;
+		//positioning
+		var leftArmOffsetX = 90;
+		var leftArmOffsetY = 50; 
+		
+		kirbyLeftArm = new THREE.Mesh(kirbyArmGeometry, kirbyArmMaterial);
+		kirbyLeftArm.overdraw = true;
+		kirbyLeftArm.position.x = -leftArmOffsetX;
+		kirbyLeftArm.position.y = leftArmOffsetY;
+		//kirbyLeftArm.position.z = armOffsetZ;
+		
+		kirby.add(kirbyLeftArm);
+	};
+};
+
 
 function addLighting(){
 	var ambientLight
 	var directionalLight
 	var ambientLightColor = 0x333333;
 	var directionalLightColor = 0xffffff;
+	var lightX = 0.5;
+	var lightY = 0.5;
+	var lightZ = 1;
 	
 	// Add subtle grey ambient lighting
 	ambientLight= new THREE.AmbientLight(ambientLightColor);
@@ -152,6 +227,6 @@ function addLighting(){
 
 	// Add pure white directional lighting
 	directionalLight = new THREE.DirectionalLight(directionalLightColor);
-	directionalLight.position.set(0.5, 0.5, 1).normalize();
+	directionalLight.position.set(lightX, lightY, lightZ).normalize();
 	scene.add(directionalLight);
 };
